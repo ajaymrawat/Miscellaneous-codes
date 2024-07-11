@@ -1,6 +1,11 @@
+! The code calculates the state-to-state and state-selected cross sections
+! ... (ICS) for (v,j=1) initial diatom state in atom-diatom collision.
+! Read readme.md (or documentation) for the detailed discussion of the code.
+!
+! Coded equation: Eq. 10 of J. Phys. Chem. A 2020, 124, 45, 9343–9359.
+!
+! Author: Ajay M. Rawat (UoH, Hyderabad) : 11 July, 2024
 ! 
-
-
 program ics_jne0
         implicit none
         integer, parameter :: njmax=61,nvmax=5,nkmax=61,nemax=601,jbstart=0,&
