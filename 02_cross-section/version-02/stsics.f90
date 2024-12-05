@@ -1,9 +1,11 @@
 ! @Ajay M. Rawat - Dec 2, 2024. (Tested with He + LiH+ -----> H + LiHe+ reaction)
 ! This module contains the subroutines which calculates the following observables:
-!     1. Total integral cross section: Ecol vs ICS (Subroutine: total_ics) 2-D
-!     2. Product vibrational level resolved ICS: Ecol vs ICS(v') (Subroutine: vibres_ics) 2-D
-!     3. Product rotational level resolved ICS: Ecol vs ICS(v',j') (Subroutine: rot_res_ics) 2-D
-!     4. Product rotational and vibrational level resolved ICS: Ecol vs j' vs ICS(Ecol, v', j') 3-D
+!     1. Total integral cross section: Ecol vs ICS (Subroutine: total_ics) 2-D (summed over v' and j')
+!     2. Product vibrational level resolved ICS: Ecol vs ICS(Ecol; v') (Subroutine: vibres_ics) 2-D (summed over j')
+!     3. Product rotational level resolved ICS: Ecol vs ICS(Ecol; v'; j') (Subroutine: rot_res_ics) 2-D
+!     4. Product rotational and vibrational level resolved ICS: v' vs j' vs ICS(v', j'; Ecol) (Subroutine: en_res_ics) 3-D
+!     5. Product vibrational level resolved ICS: Ecol vs v' vs ICS(Ecol,v') (Subroutine: en_vs_v_ics) 3-D
+!     6. Product vibrational level resolved ICS: Ecol vs j' vs ICS(Ecol, j'; v')  (Subroutine: vib_rot_res_ics) 3-D (for specific v')
 module ics_mods
 
         integer, parameter:: njmx=16,nvabmx=6,nkmx=16,nemax=1001, &
@@ -117,6 +119,25 @@ subroutine vibres_ics ! Ecol vs ICS(Ecol,v') : ICS is summed over j'
 
 end subroutine
 
+subroutine en_vs_v_ics
+        character*15 :: outputfile
+        real*8 :: tpvib
+
+        outputfile='ecol_vp_ics.dat'
+        open(11,file=trim(outputfile))
+
+        do ie=1,ne
+        do iv=1,nvab
+        tpvib=0.d0
+        do j=1,njab
+        tpvib=tpvib+tpa(ie,iv,j)
+        enddo
+        write(11,*)(eray(ie)-evib)*autev, iv-1, (const/(eray(ie)-evib))*tpvib*b2asq
+        enddo
+        write(11,*)
+        enddo
+        close(11)
+end subroutine
 
 subroutine vib_rot_res_ics ! Ecol vs vs j' vs ICS(Ecol,v',j') : Each v' have different files
 
@@ -163,29 +184,33 @@ subroutine rot_res_ics             ! Ecol vs ICS(v',j') : Each combination of v'
 
 end subroutine
 
-subroutine en_res_ics(ren)
-      real*8 :: ren
+subroutine en_res_ics!(ren)
+      !real*8 :: ren
       character*12 :: enoutfile
+      character*3  :: cle
 
-      do i=1,ne
-      if(int((eray(i)*autev)-ren).eq.0) then
-      ie=i
-
-      print*,ie,eray(ie)
+      le=41   ! here put the position of eray(i) for which distribution is calculated
+      enoutfile= 'ics_e000.dat'
+      
+      if (le.lt.10) then
+              write(cle,'(i1)')le  ! changing int to string
+              enoutfile = enoutfile(1:7)//trim(cle)
+      elseif (le.gt.10.and.le.lt.100) then
+              write(cle,'(i2)')le
+              enoutfile = enoutfile(1:6)//trim(cle)
+      else
+              write(cle,'(i3)')le
+              enoutfile = enoutfile(1:5)//trim(cle)
       endif
-      enddo
+        print*,enoutfile,(eray(le)-evib)*autev,'eV'
 
-      enoutfile= 'ics_e00.dat'
-      write(enoutfile(6:6),'(i1)') ie/10
-      write(enoutfile(7:7),'(i1)') mod(ie,10)
       open(14,file=trim(enoutfile))
       do iv=1,nvab
       do j=1,njab
-      write(14,*) (iv-1),(j-1), (const/(eray(le)-evj0))*tpa(le,iv,j)*b2asq
+      write(14,*) (iv-1),(j-1),(const/(eray(le)-evj0))*tpa(le,iv,j)*b2asq
       enddo  !--- end of j loop
       write(14,*)
       enddo  !-- end of iv loop
-
 end subroutine
 
 end module ics_mods
