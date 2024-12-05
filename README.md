@@ -10,8 +10,8 @@ The following codes are available in the database.
 
 ## 02_cross-section
   <ul>
-   <li><b> &emsp;&emsp;  Code:</b> ics-jneq.f90 </li><br>
+   <li><b> &emsp;&emsp;  Code:</b> ics-jneq.f90 </li>
   &emsp;&emsp;&emsp;&emsp; This calculates the ICS for (<i>v</i>, <i>j</i> &ne; 0) diatomic state in a atom-diatom reaction.
-    <li><b> &emsp;&emsp; code:</b> version-02/stsics.f90 </li> <br>
+    <li><b> &emsp;&emsp; code:</b> version-02/stsics.f90 </li>
     &emsp;&emsp;&emsp;&emsp; This calculates the ICS for (<i>v</i>, <i>j</i> = 0) diatomic state in a atom-diatom reaction. Rotational and vibration level resolved ICSs can be calculated from the code.
   </ul>
